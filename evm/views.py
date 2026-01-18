@@ -5,11 +5,11 @@ from rest_framework import status
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 import json
 import hashlib
 import time
-from datetime import datetime
-import os
+from django.db.models import Count
 
 from .models import Booth, Candidate, VoteEvent, Signal, VVPATSlip, AuditSession
 from .serializers import BoothSerializer, VoteEventSerializer, SignalSerializer
@@ -33,12 +33,14 @@ def index(request):
     return render(request, 'evm/index.html', context)
 
 @csrf_exempt
-@api_view(['POST'])
-@permission_classes([AllowAny])
 def cast_vote(request, booth_id):
-    """Simulate casting a vote (EVM + VVPAT + Signal)"""
+    """Pure Django view - NO DRF decorators"""
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST required"}, status=405)
+    
     try:
-        data = json.loads(request.body)
+        data = json.loads(request.body.decode('utf-8'))
+        
         booth = Booth.objects.get(booth_id=booth_id)
         candidate = Candidate.objects.get(booth=booth, candidate_id=data['candidateID'])
         
@@ -46,48 +48,32 @@ def cast_vote(request, booth_id):
         sequence = VoteEvent.objects.filter(booth=booth).count() + 1
         voter_token_hash = hashlib.sha256(data['voterToken'].encode()).hexdigest()
         
-        # 1. EVM Vote Event
+        # Create records
         vote = VoteEvent.objects.create(
-            booth=booth,
-            candidate=candidate,
-            timestamp=timestamp,
-            sequence=sequence,
+            booth=booth, candidate=candidate,
+            timestamp=timestamp, sequence=sequence,
             voter_token_hash=voter_token_hash
         )
+        VVPATSlip.objects.create(vote=vote, slip_id=f"{booth_id}-SLIP-{sequence:04d}")
         
-        # 2. VVPAT Slip
-        VVPATSlip.objects.create(
-            vote=vote,
-            slip_id=f"{booth_id}-SLIP-{sequence:04d}"
-        )
-        
-        # 3. Signal for BAM (encrypted-like)
         signal_data = {
-            "boothID": booth_id,
-            "evmID": booth.evm_id,
+            "boothID": booth_id, "evmID": booth.evm_id,
             "candidateID": data['candidateID'],
-            "timestamp": timestamp,
-            "sequence": sequence,
+            "timestamp": timestamp, "sequence": sequence,
             "voterToken": data['voterToken']
         }
         signal_json = json.dumps(signal_data, sort_keys=True)
         signal_hash = hashlib.sha256(signal_json.encode()).hexdigest()
+        Signal.objects.create(vote=vote, raw_signal=signal_json, signal_hash=signal_hash)
         
-        Signal.objects.create(
-            vote=vote,
-            raw_signal=signal_json,
-            signal_hash=signal_hash
-        )
-        
-        return Response({
+        return JsonResponse({
             "status": "SUCCESS",
-            "message": "Vote recorded: EVM + VVPAT + Signal generated",
-            "vote": VoteEventSerializer(vote).data,
+            "sequence": sequence,
             "signal_hash": signal_hash
         })
         
     except Exception as e:
-        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({"error": str(e)}, status=400)
 
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -95,8 +81,8 @@ def booth_status(request, booth_id):
     """Current status for booth"""
     booth = Booth.objects.get(booth_id=booth_id)
     votes = VoteEvent.objects.filter(booth=booth).count()
-    signals = Signal.objects.filter(booth=booth).count()
-    vvpat = VVPATSlip.objects.filter(booth=booth).count()
+    signals = Signal.objects.filter(vote__booth=booth).count()  # FIXED
+    vvpat = VVPATSlip.objects.filter(vote__booth=booth).count()  # FIXED
     
     return Response({
         "booth_id": booth_id,
@@ -111,7 +97,7 @@ def booth_status(request, booth_id):
 def booth_signals(request, booth_id):
     """Signals for BAM (Pi to read)"""
     booth = Booth.objects.get(booth_id=booth_id)
-    signals = Signal.objects.filter(booth=booth).order_by('vote__sequence')
+    signals = Signal.objects.filter(vote__booth=booth).order_by('vote__sequence')  # FIXED
     
     return Response({
         "booth_id": booth_id,
@@ -126,11 +112,10 @@ def booth_results(request, booth_id):
     booth = Booth.objects.get(booth_id=booth_id)
     counts = VoteEvent.objects.filter(booth=booth).values(
         'candidate__candidate_id'
-    ).annotate(count=models.Count('id'))
+    ).annotate(count=Count('id'))  # Added Count import
     
     return Response({
         "booth_id": booth_id,
         "results": list(counts),
         "total_votes": VoteEvent.objects.filter(booth=booth).count()
     })
-

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Booth, VoteEvent, Signal, VVPATSlip, AuditSession
+from .models import Booth, VoteEvent, Signal, VVPATSlip, AuditSession, Candidate
 
 class CandidateSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>EVM Django Simulator - {{ booth.booth_id }}</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        .status { background: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 5px solid #2196F3; }
+        .status h3 { color: #1976D2; margin-bottom: 15px; }
+        .match { color: #4CAF50; font-weight: bold; }
+        .mismatch { color: #f44336; font-weight: bold; }
+        .candidates { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 30px 0; }
+        .candidate-btn { 
+            padding: 25px 15px; text-align: center; border: 2px solid #ddd; 
+            border-radius: 12px; cursor: pointer; background: white;
+            transition: all 0.3s; font-size: 16px;
+        }
+        .candidate-btn:hover { border-color: #2196F3; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(33,150,243,0.3); }
+        .candidate-btn:active { transform: translateY(0); }
+        .symbol { font-size: 36px; display: block; margin-bottom: 10px; }
+        .name { font-weight: bold; color: #333; }
+        #results { margin-top: 30px; padding: 20px; background: #f0f8f0; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗳️ Electronic Voting Machine</h1>
+            <p><strong>Booth:</strong> {{ booth.booth_id }} | {{ booth.state }} | {{ booth.ac_name }}</p>
+        </div>
+
+        <div class="status" id="statusBox">
+            <h3>🔍 Three-Way Audit Status</h3>
+            <div id="status">Loading...</div>
+        </div>
+
+        <div class="candidates" id="candidatesGrid">
+            {% for cand in booth.candidates %}
+            <button class="candidate-btn" onclick="castVote('{{ cand.candidate_id }}', '{{ cand.name }}', '{{ cand.symbol }}')">
+                <span class="symbol">{{ cand.symbol }}</span>
+                <div class="name">{{ cand.name }}</div>
+            </button>
+            {% endfor %}
+        </div>
+
+        <div id="results" style="display:none;">
+            <h3>📊 Results</h3>
+            <div id="resultsData"></div>
+        </div>
+    </div>
+
+    <script>
+        const BOOTH_ID = "{{ booth.booth_id }}";
+        
+        async function refreshStatus() {
+            try {
+                const res = await fetch(`/status/${BOOTH_ID}/`);
+                const data = await res.json();
+                
+                document.getElementById('status').innerHTML = `
+                    <p><strong>EVM Votes:</strong> ${data.evm_votes}</p>
+                    <p><strong>VVPAT Slips:</strong> ${data.vvpat_slips}</p>
+                    <p><strong>BAM Signals:</strong> ${data.bam_signals}</p>
+                    <p><strong>All Match:</strong> 
+                        <span class="${data.all_match ? 'match' : 'mismatch'}">
+                            ${data.all_match ? '✅ YES' : '❌ NO'}
+                        </span>
+                    </p>
+                `;
+            } catch(e) {
+                document.getElementById('status').innerHTML = '<p style="color:red;">Status error</p>';
+            }
+        }
+
+        async function castVote(candidateID, candidateName, symbol) {
+            try {
+                const res = await fetch(`/cast-vote/${BOOTH_ID}/`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        candidateID: candidateID,
+                        voterToken: `voter_${Date.now()}`
+                    })
+                });
+                
+                const result = await res.json();
+                
+                if (result.status === 'SUCCESS') {
+                    alert(`✓ Vote recorded for ${candidateName}\n📄 VVPAT printed\n🔒 Signal sent to BAM`);
+                    refreshStatus();
+                } else {
+                    alert('❌ Error: ' + result.error);
+                }
+            } catch(e) {
+                alert('Network error: ' + e);
+            }
+        }
+
+        // Auto-refresh every 3 seconds
+        setInterval(refreshStatus, 3000);
+        refreshStatus();
+    </script>
+</body>
+</html>
