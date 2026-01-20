@@ -60,6 +60,10 @@ def cast_vote(request, booth_id):
             sequence=sequence,
             voter_token_hash=voter_token_hash
         )
+
+        # 1.1 Update Candidate Count
+        candidate.vote_count += 1
+        candidate.save()
         
         # 2. VVPAT Slip
         VVPATSlip.objects.create(
