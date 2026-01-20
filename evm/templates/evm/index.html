@@ -1,105 +1,636 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>EVM Django Simulator - {{ booth.booth_id }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indian EVM Simulator</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background: #f5f5f5; }
-        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .status { background: #e8f4fd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 5px solid #2196F3; }
-        .status h3 { color: #1976D2; margin-bottom: 15px; }
-        .match { color: #4CAF50; font-weight: bold; }
-        .mismatch { color: #f44336; font-weight: bold; }
-        .candidates { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 30px 0; }
-        .candidate-btn { 
-            padding: 25px 15px; text-align: center; border: 2px solid #ddd; 
-            border-radius: 12px; cursor: pointer; background: white;
-            transition: all 0.3s; font-size: 16px;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .candidate-btn:hover { border-color: #2196F3; transform: translateY(-3px); box-shadow: 0 4px 12px rgba(33,150,243,0.3); }
-        .candidate-btn:active { transform: translateY(0); }
-        .symbol { font-size: 36px; display: block; margin-bottom: 10px; }
-        .name { font-weight: bold; color: #333; }
-        #results { margin-top: 30px; padding: 20px; background: #f0f8f0; border-radius: 8px; }
+
+        body {
+            font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f3f4f6;
+            padding: 20px;
+        }
+
+        .layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr 320px;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .panel {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
+            padding: 20px 22px;
+        }
+
+        .panel-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #111827;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .panel-subtitle {
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            margin-bottom: 10px;
+        }
+
+        /* CONTROL UNIT */
+        .cu-display {
+            background: #111827;
+            color: #22c55e;
+            font-family: "Courier New", monospace;
+            font-weight: 600;
+            font-size: 16px;
+            padding: 16px;
+            border-radius: 10px;
+            text-align: center;
+            min-height: 70px;
+            margin-bottom: 18px;
+        }
+
+        .cu-display small {
+            display: block;
+            color: #9ca3af;
+            margin-top: 4px;
+        }
+
+        .cu-ballot-wrap {
+            background: #fee2e2;
+            border-radius: 12px;
+            padding: 6px;
+            margin-bottom: 14px;
+        }
+
+        .ballot-btn {
+            width: 100%;
+            height: 56px;
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(135deg, #ef4444, #b91c1c);
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+        }
+
+        .ballot-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+        }
+
+        .ballot-btn:disabled {
+            background: #9ca3af;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        .cu-meta {
+            font-size: 12px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        .cu-meta span {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        /* BALLOT UNIT */
+        .bu-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .bu-ready {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bu-ready-dot {
+            width: 11px;
+            height: 11px;
+            border-radius: 50%;
+            border: 1px solid #9ca3af;
+            background: #e5e7eb;
+            transition: all 0.25s ease;
+        }
+
+        .bu-ready-dot.on {
+            background: #22c55e;
+            border-color: #16a34a;
+            box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
+        }
+
+        .ballot-table {
+            background: #e5e7eb;
+            border-radius: 14px;
+            padding: 10px;
+        }
+
+        .ballot-paper-title {
+            text-align: center;
+            font-weight: 600;
+            font-size: 13px;
+            color: #111827;
+            padding: 4px 0 8px;
+        }
+
+        .ballot-scroll {
+            max-height: 480px;
+            overflow-y: auto;
+            background: #f3f4f6;
+            border-radius: 10px;
+            padding: 6px;
+        }
+
+        .ballot-row {
+            display: grid;
+            grid-template-columns: 40px minmax(120px, 1fr) 80px 30px 80px;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 10px;
+            border-bottom: 1px solid #e5e7eb;
+            background: #ffffff;
+        }
+
+        .ballot-row:nth-child(2n) {
+            background: #f9fafb;
+        }
+
+        .ballot-row:last-child {
+            border-bottom: none;
+        }
+
+        .cell-sn {
+            text-align: center;
+            font-weight: 500;
+            color: #4b5563;
+            font-size: 13px;
+        }
+
+        .cell-name {
+            font-size: 13px;
+            color: #111827;
+        }
+
+        .cell-symbol {
+            text-align: center;
+            font-size: 18px;
+        }
+
+        .cell-lamp-wrap {
+            display: flex;
+            justify-content: center;
+        }
+
+        .cell-lamp {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #7f1d1d;
+            border: 1px solid #450a0a;
+            box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.4);
+            opacity: 0.25;
+            transition: opacity 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .cell-lamp.on {
+            opacity: 1;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+        }
+
+        .cell-button-wrap {
+            display: flex;
+            justify-content: flex-start;
+        }
+
+        .vote-button {
+            width: 56px;
+            height: 24px;
+            border-radius: 999px;
+            border: none;
+            background: #1d4ed8;
+            color: #ffffff;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
+            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+        }
+
+        .vote-button:hover:not(.disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.6);
+            background: #1e40af;
+        }
+
+        .vote-button:active:not(.disabled) {
+            transform: translateY(0);
+            box-shadow: 0 1px 4px rgba(37, 99, 235, 0.5);
+        }
+
+        .vote-button.disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .bu-note {
+            margin-top: 10px;
+            font-size: 11px;
+            color: #6b7280;
+            text-align: center;
+        }
+
+        /* VVPAT */
+        .vvpat-window {
+            border-radius: 12px;
+            border: 1px solid #fbbf24;
+            background: #fef9c3;
+            height: 210px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vvpat-slip {
+            background: #ffffff;
+            border-radius: 6px;
+            border: 1px solid #f59e0b;
+            padding: 10px 14px;
+            max-width: 220px;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            font-family: "Courier New", monospace;
+        }
+
+        .vvpat-slip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .vvpat-slip-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 4px;
+        }
+
+        .vvpat-slip-main {
+            font-size: 17px;
+            color: #b45309;
+            margin-bottom: 4px;
+        }
+
+        .vvpat-slip-meta {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .vvpat-cut-label {
+            position: absolute;
+            right: 10px;
+            bottom: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #b91c1c;
+        }
+
+        .vvpat-counter {
+            text-align: center;
+            font-size: 12px;
+            color: #92400e;
+            margin-top: 10px;
+        }
+
+        /* Audit bar */
+        .audit-bar {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+            display: flex;
+            gap: 24px;
+            padding: 10px 18px;
+            border-radius: 999px;
+            background: #0f766e;
+            color: #ecfeff;
+            box-shadow: 0 4px 14px rgba(15, 118, 110, 0.5);
+            font-size: 13px;
+        }
+
+        .audit-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .audit-count {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .audit-label {
+            opacity: 0.85;
+        }
+
+        .audit-status-ok {
+            animation: auditPulse 2s infinite;
+        }
+
+        @keyframes auditPulse {
+
+            0%,
+            100% {
+                text-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
+            }
+
+            50% {
+                text-shadow: 0 0 10px rgba(255, 255, 255, 1);
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .audit-bar {
+                border-radius: 14px;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🗳️ Electronic Voting Machine</h1>
-            <p><strong>Booth:</strong> {{ booth.booth_id }} | {{ booth.state }} | {{ booth.ac_name }}</p>
+    <div class="layout">
+        <!-- CONTROL UNIT -->
+        <div class="panel">
+            <div class="panel-title">CONTROL UNIT (CU)</div>
+            <div class="panel-subtitle">Booth: {{ booth.booth_id }}</div>
+
+            <div class="cu-display" id="cuDisplay">
+                EVM READY
+                <small>Press BALLOT to allow next voter</small>
+            </div>
+
+            <div class="cu-ballot-wrap">
+                <button id="ballotBtn" class="ballot-btn" onclick="pressBallot()">BALLOT</button>
+            </div>
+
+            <div class="cu-meta">
+                Total Votes Cast: <span id="totalVotes">0</span>
+            </div>
         </div>
 
-        <div class="status" id="statusBox">
-            <h3>🔍 Three-Way Audit Status</h3>
-            <div id="status">Loading...</div>
+        <!-- BALLOT UNIT -->
+        <div class="panel">
+            <div class="panel-title">BALLOT UNIT (BU)</div>
+            <div class="bu-header-row">
+                <div>Dummy Ballot Paper</div>
+                <div class="bu-ready">
+                    <span>Ready</span>
+                    <span id="readyDot" class="bu-ready-dot"></span>
+                </div>
+            </div>
+
+            <div class="ballot-table">
+                <div class="ballot-paper-title">DUMMY BALLOT PAPER</div>
+                <div class="ballot-scroll" id="ballotRows">
+                    <!-- Rows will be created by JavaScript -->
+                </div>
+            </div>
+
+            <div class="bu-note">
+                Presiding Officer: press BALLOT on CU.<br>
+                Voter: when READY is ON, press blue button for your candidate.
+            </div>
         </div>
 
-        <div class="candidates" id="candidatesGrid">
-            {% for cand in booth.candidates %}
-            <button class="candidate-btn" onclick="castVote('{{ cand.candidate_id }}', '{{ cand.name }}', '{{ cand.symbol }}')">
-                <span class="symbol">{{ cand.symbol }}</span>
-                <div class="name">{{ cand.name }}</div>
-            </button>
-            {% endfor %}
+        <!-- VVPAT -->
+        <div class="panel">
+            <div class="panel-title">VVPAT UNIT</div>
+            <div class="panel-subtitle">Slip visible for 7 seconds</div>
+
+            <div class="vvpat-window" id="vvpatWindow">
+                <div style="font-size: 12px; color:#6b7280;">Waiting for vote...</div>
+            </div>
+            <div class="vvpat-counter">
+                Slips Printed: <span id="slipCount">0</span>
+            </div>
         </div>
 
-        <div id="results" style="display:none;">
-            <h3>📊 Results</h3>
-            <div id="resultsData"></div>
+        <!-- AUDIT BAR -->
+        <div class="audit-bar">
+            <div class="audit-item">
+                <span class="audit-count" id="evmCount">0</span>
+                <span class="audit-label">EVM Votes</span>
+            </div>
+            <div class="audit-item">
+                <span class="audit-count" id="vvpatCount">0</span>
+                <span class="audit-label">VVPAT Slips</span>
+            </div>
+            <div class="audit-item">
+                <span class="audit-count" id="bamCount">0</span>
+                <span class="audit-label">BAM Signals</span>
+            </div>
+            <div class="audit-item audit-status-ok">
+                <span class="audit-count" id="auditStatus">✅</span>
+                <span class="audit-label">Three‑Way Match</span>
+            </div>
         </div>
     </div>
 
     <script>
         const BOOTH_ID = "{{ booth.booth_id }}";
-        
+
+        let evmState = "idle"; // idle, ballot_released, selecting, processing
+        let totalVotes = 0;
+        let slipPrinted = 0;
+
+        const candidateData = [
+            { sn: 1, id: "CAND_A", name: "AAA", symbol: "α" },
+            { sn: 2, id: "CAND_B", name: "BBB", symbol: "β" },
+            { sn: 3, id: "CAND_C", name: "CCC", symbol: "γ" },
+            { sn: 4, id: "CAND_D", name: "DDD", symbol: "δ" },
+            { sn: 5, id: "NOTA", name: "None of the Above", symbol: "✗" }
+        ];
+
+        function buildBallotRows() {
+            const container = document.getElementById("ballotRows");
+            container.innerHTML = "";
+
+            candidateData.forEach(c => {
+                const row = document.createElement("div");
+                row.className = "ballot-row";
+                row.innerHTML = `
+                <div class="cell-sn">${c.sn}</div>
+                <div class="cell-name">${c.name}</div>
+                <div class="cell-symbol">${c.symbol}</div>
+                <div class="cell-lamp-wrap">
+                    <div class="cell-lamp" id="lamp-${c.id}"></div>
+                </div>
+                <div class="cell-button-wrap">
+                    <button class="vote-button" id="btn-${c.id}" onclick="vote('${c.id}')">VOTE</button>
+                </div>
+            `;
+                container.appendChild(row);
+            });
+        }
+
+        function setAllButtons(enabled) {
+            candidateData.forEach(c => {
+                const btn = document.getElementById(`btn-${c.id}`);
+                if (!btn) return;
+                btn.classList.toggle("disabled", !enabled);
+                btn.disabled = !enabled;
+            });
+        }
+
+        function clearAllLamps() {
+            candidateData.forEach(c => {
+                const lamp = document.getElementById(`lamp-${c.id}`);
+                if (lamp) lamp.classList.remove("on");
+            });
+        }
+
+        function pressBallot() {
+            if (evmState !== "idle") return;
+
+            evmState = "ballot_released";
+            document.getElementById("cuDisplay").innerHTML =
+                "BALLOT RELEASED<br><small>Voter may vote now</small>";
+            document.getElementById("ballotBtn").disabled = true;
+
+            document.getElementById("readyDot").classList.add("on");
+            setAllButtons(true);
+            clearAllLamps();
+
+            setTimeout(() => { evmState = "selecting"; }, 200);
+        }
+
+        async function vote(candidateId) {
+            if (evmState !== "selecting") {
+                alert("Presiding Officer must press BALLOT on Control Unit first.");
+                return;
+            }
+
+            evmState = "processing";
+            setAllButtons(false);
+
+            try {
+                const res = await fetch(`/cast-vote/${BOOTH_ID}/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        candidateID: candidateId,
+                        voterToken: "v_" + Date.now()
+                    })
+                });
+
+                const data = await res.json();
+                if (data.status !== "SUCCESS") {
+                    alert("Vote error: " + (data.error || "Unknown error"));
+                    resetEVM();
+                    return;
+                }
+
+                totalVotes += 1;
+                document.getElementById("totalVotes").textContent = totalVotes;
+
+                // Turn ON red lamp for that candidate
+                clearAllLamps();
+                const lamp = document.getElementById(`lamp-${candidateId}`);
+                if (lamp) lamp.classList.add("on");
+
+                // Show VVPAT slip
+                const cand = candidateData.find(c => c.id === candidateId);
+                showSlip(cand, data.sequence);
+
+            } catch (e) {
+                alert("Network error: " + e);
+                resetEVM();
+            }
+        }
+
+        function showSlip(candidate, sequence) {
+            slipPrinted += 1;
+            document.getElementById("slipCount").textContent = slipPrinted;
+
+            const win = document.getElementById("vvpatWindow");
+            win.innerHTML = `
+            <div class="vvpat-slip show" id="vvpatSlip">
+                <div class="vvpat-slip-title">VVPAT SLIP</div>
+                <div class="vvpat-slip-main">${candidate.symbol}  ${candidate.name}</div>
+                <div class="vvpat-slip-meta">Seq: ${sequence}</div>
+            </div>
+            <div class="vvpat-cut-label">CUT &amp; DROP</div>
+        `;
+
+            // Hide after exactly 7 seconds
+            setTimeout(() => {
+                document.getElementById("vvpatWindow").innerHTML =
+                    '<div style="font-size:12px;color:#6b7280;">Slip stored in sealed box</div>';
+                resetEVM();
+            }, 7000);
+        }
+
+        function resetEVM() {
+            evmState = "idle";
+            document.getElementById("cuDisplay").innerHTML =
+                "EVM READY<br><small>Press BALLOT to allow next voter</small>";
+            document.getElementById("ballotBtn").disabled = false;
+            document.getElementById("readyDot").classList.remove("on");
+            clearAllLamps();
+            setAllButtons(false);
+            refreshStatus();
+        }
+
         async function refreshStatus() {
             try {
                 const res = await fetch(`/status/${BOOTH_ID}/`);
                 const data = await res.json();
-                
-                document.getElementById('status').innerHTML = `
-                    <p><strong>EVM Votes:</strong> ${data.evm_votes}</p>
-                    <p><strong>VVPAT Slips:</strong> ${data.vvpat_slips}</p>
-                    <p><strong>BAM Signals:</strong> ${data.bam_signals}</p>
-                    <p><strong>All Match:</strong> 
-                        <span class="${data.all_match ? 'match' : 'mismatch'}">
-                            ${data.all_match ? '✅ YES' : '❌ NO'}
-                        </span>
-                    </p>
-                `;
-            } catch(e) {
-                document.getElementById('status').innerHTML = '<p style="color:red;">Status error</p>';
-            }
+                document.getElementById("evmCount").textContent = data.evm_votes;
+                document.getElementById("vvpatCount").textContent = data.vvpat_slips;
+                document.getElementById("bamCount").textContent = data.bam_signals;
+                document.getElementById("auditStatus").textContent =
+                    data.all_match ? "✅" : "⚠️";
+            } catch (e) { }
         }
 
-        async function castVote(candidateID, candidateName, symbol) {
-            try {
-                const res = await fetch(`/cast-vote/${BOOTH_ID}/`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        candidateID: candidateID,
-                        voterToken: `voter_${Date.now()}`
-                    })
-                });
-                
-                const result = await res.json();
-                
-                if (result.status === 'SUCCESS') {
-                    alert(`✓ Vote recorded for ${candidateName}\n📄 VVPAT printed\n🔒 Signal sent to BAM`);
-                    refreshStatus();
-                } else {
-                    alert('❌ Error: ' + result.error);
-                }
-            } catch(e) {
-                alert('Network error: ' + e);
-            }
-        }
-
-        // Auto-refresh every 3 seconds
-        setInterval(refreshStatus, 3000);
+        // Init
+        buildBallotRows();
+        setAllButtons(false);
         refreshStatus();
+        setInterval(refreshStatus, 2000);
     </script>
 </body>
+
 </html>

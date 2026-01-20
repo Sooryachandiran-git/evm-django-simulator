@@ -34,44 +34,66 @@ def index(request):
 
 @csrf_exempt
 def cast_vote(request, booth_id):
-    """Pure Django view - NO DRF decorators"""
+    """Pure Django view - matches new UI exactly"""
     if request.method != 'POST':
         return JsonResponse({"error": "POST required"}, status=405)
     
     try:
         data = json.loads(request.body.decode('utf-8'))
         
+        # Validate required fields
+        if not data.get('candidateID'):
+            return JsonResponse({"error": "candidateID required"}, status=400)
+        
         booth = Booth.objects.get(booth_id=booth_id)
         candidate = Candidate.objects.get(booth=booth, candidate_id=data['candidateID'])
         
         timestamp = int(time.time() * 1000)
         sequence = VoteEvent.objects.filter(booth=booth).count() + 1
-        voter_token_hash = hashlib.sha256(data['voterToken'].encode()).hexdigest()
+        voter_token_hash = hashlib.sha256(str(timestamp).encode()).hexdigest()  # UI sends timestamp
         
-        # Create records
+        # 1. Create EVM Vote
         vote = VoteEvent.objects.create(
-            booth=booth, candidate=candidate,
-            timestamp=timestamp, sequence=sequence,
+            booth=booth,
+            candidate=candidate,
+            timestamp=timestamp,
+            sequence=sequence,
             voter_token_hash=voter_token_hash
         )
-        VVPATSlip.objects.create(vote=vote, slip_id=f"{booth_id}-SLIP-{sequence:04d}")
         
+        # 2. VVPAT Slip
+        VVPATSlip.objects.create(
+            vote=vote,
+            slip_id=f"{booth_id}-SLIP-{sequence:04d}"
+        )
+        
+        # 3. BAM Signal
         signal_data = {
-            "boothID": booth_id, "evmID": booth.evm_id,
+            "boothID": booth_id,
+            "evmID": booth.evm_id,
             "candidateID": data['candidateID'],
-            "timestamp": timestamp, "sequence": sequence,
-            "voterToken": data['voterToken']
+            "timestamp": timestamp,
+            "sequence": sequence
         }
         signal_json = json.dumps(signal_data, sort_keys=True)
         signal_hash = hashlib.sha256(signal_json.encode()).hexdigest()
-        Signal.objects.create(vote=vote, raw_signal=signal_json, signal_hash=signal_hash)
+        
+        Signal.objects.create(
+            vote=vote,
+            raw_signal=signal_json,
+            signal_hash=signal_hash
+        )
         
         return JsonResponse({
             "status": "SUCCESS",
             "sequence": sequence,
-            "signal_hash": signal_hash
+            "signal_hash": signal_hash[:16] + "..."
         })
         
+    except Booth.DoesNotExist:
+        return JsonResponse({"error": "Booth not found"}, status=404)
+    except Candidate.DoesNotExist:
+        return JsonResponse({"error": "Candidate not found"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
 
