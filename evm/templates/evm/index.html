@@ -468,6 +468,7 @@
         </div>
     </div>
 
+    {{ booth|json_script:"booth-data" }}
     <script>
         const BOOTH_ID = "{{ booth.booth_id }}";
 
@@ -475,13 +476,13 @@
         let totalVotes = 0;
         let slipPrinted = 0;
 
-        const candidateData = [
-            { sn: 1, id: "CAND_A", name: "AAA", symbol: "α" },
-            { sn: 2, id: "CAND_B", name: "BBB", symbol: "β" },
-            { sn: 3, id: "CAND_C", name: "CCC", symbol: "γ" },
-            { sn: 4, id: "CAND_D", name: "DDD", symbol: "δ" },
-            { sn: 5, id: "NOTA", name: "None of the Above", symbol: "✗" }
-        ];
+        const boothData = JSON.parse(document.getElementById('booth-data').textContent);
+        const candidateData = boothData.candidates.map((c, i) => ({
+            sn: i + 1,
+            id: c.candidate_id,
+            name: c.name,
+            symbol: c.symbol
+        }));
 
         function buildBallotRows() {
             const container = document.getElementById("ballotRows");
