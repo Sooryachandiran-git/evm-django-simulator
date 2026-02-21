@@ -23,3 +23,71 @@ staticfiles/
 # OS files
 .DS_Store
 Thumbs.db
+
+
+# ==========================================
+# FABRIC BAM V2 IGNORE RULES
+# ==========================================
+
+# Generated artifacts
+*.json
+*.pb
+*.log
+*.tar.gz
+
+# Python (Fabric)
+fabric-bam-v2/bam-sim/venv/
+fabric-bam-v2/bam-sim/__pycache__/
+*.py[cod]
+*$py.class
+.env
+
+# Fabric/Chaincode
+chaincode-external/
+wallet/
+keystore/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# ==========================================
+# FABRIC SAMPLES IGNORE RULES
+# ==========================================
+
+# Emacs backup files
+*~
+*#
+.#*
+
+# Vim file artifacts
+.*.sw*
+
+# IDEs & Build Tools
+.project
+.vscode
+.gradle
+.idea
+.classpath
+.settings
+target/
+build/
+
+# Go vendor directories
+vendor/
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Fabric Binaries & Config
+fabric-bam-v2/fabric-samples/bin/
+fabric-bam-v2/fabric-samples/builders/
+fabric-bam-v2/fabric-samples/config/
+fabric-bam-v2/fabric-samples/external-chaincode/
+fabric-bam-v2/fabric-samples/install-fabric.sh
+
+# Exceptions (Do NOT ignore these configs)
+!fabric-bam-v2/fabric-samples/full-stack-asset-transfer-guide/infrastructure/sample-network/config

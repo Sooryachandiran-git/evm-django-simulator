@@ -25,6 +25,17 @@ Beyond simulation, this project introduces a **Ballot Audit Module (BAM)** conce
 - **REST API**:
   - Fully exposed API endpoints for external hardware sensors (like Raspberry Pi) to interact with the simulator.
 
+## 🚀 Blockchain Integration (v2.0)
+
+This version introduces a robust **Immutable Audit Layer** using Hyperledger Fabric. 
+
+- **Smart Contract (Chaincode)**: Records every vote signal as a unique receipt on the ledger.
+- **BAM Simulator**: A Python-based bridge that monitors the EVM signals and commits them to the blockchain in real-time.
+- **Immutable Log**: Ensures that once a vote is cast, it cannot be altered or deleted from the audit history.
+
+**For setup instructions and technical details, see [README_BLOCKCHAIN.md](./README_BLOCKCHAIN.md).**
+
+
 ## Tech Stack
 
 - **Backend**: Python, Django 4.2, Django REST Framework (DRF)
