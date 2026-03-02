@@ -13,172 +13,230 @@
         }
 
         body {
-            font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f3f4f6;
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
             padding: 20px;
+            color: #222;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 18px;
+            color: #111;
         }
 
         .layout {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: 280px 1fr 320px;
-            gap: 24px;
-            align-items: flex-start;
+            grid-template-columns: 260px 1fr 300px;
+            gap: 16px;
+            align-items: start;
         }
 
         .panel {
-            background: #ffffff;
-            border-radius: 14px;
-            border: 1px solid #e5e7eb;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-            padding: 20px 22px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 16px;
         }
 
         .panel-title {
-            font-weight: 600;
-            font-size: 16px;
-            color: #111827;
+            font-size: 13px;
+            font-weight: bold;
             text-align: center;
-            margin-bottom: 16px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+            color: #333;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        .panel-subtitle {
-            text-align: center;
-            font-size: 12px;
-            color: #6b7280;
-            margin-bottom: 10px;
-        }
-
-        /* CONTROL UNIT */
+        /* ── CONTROL UNIT ── */
         .cu-display {
-            background: #111827;
-            color: #22c55e;
+            background: #1a1a1a;
+            color: #00e000;
             font-family: "Courier New", monospace;
-            font-weight: 600;
-            font-size: 16px;
-            padding: 16px;
-            border-radius: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 4px;
             text-align: center;
-            min-height: 70px;
-            margin-bottom: 18px;
+            min-height: 64px;
+            margin-bottom: 12px;
+            line-height: 1.5;
         }
 
         .cu-display small {
             display: block;
-            color: #9ca3af;
+            color: #888;
+            font-size: 11px;
             margin-top: 4px;
         }
 
-        .cu-ballot-wrap {
-            background: #fee2e2;
-            border-radius: 12px;
-            padding: 6px;
-            margin-bottom: 14px;
+        .cu-display.sealed {
+            color: #ff4444;
+        }
+
+        .status-badge {
+            display: block;
+            text-align: center;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 0;
+            margin-bottom: 10px;
+            border-radius: 3px;
+        }
+
+        .status-badge.open {
+            background: #e6f9ee;
+            color: #1a7a3a;
+            border: 1px solid #a3d9b5;
+        }
+
+        .status-badge.sealed {
+            background: #fdecea;
+            color: #b91c1c;
+            border: 1px solid #f5a9a5;
+        }
+
+        .cu-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
         .ballot-btn {
-            width: 100%;
-            height: 56px;
-            border-radius: 10px;
-            border: none;
-            background: linear-gradient(135deg, #ef4444, #b91c1c);
-            color: #ffffff;
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 0.03em;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
-            transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+            background: #c0392b;
+            color: #fff;
         }
 
         .ballot-btn:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+            background: #a93226;
         }
 
         .ballot-btn:disabled {
-            background: #9ca3af;
-            box-shadow: none;
+            background: #ccc;
+            color: #888;
+            cursor: not-allowed;
+        }
+
+        .close-btn {
+            background: #fff;
+            color: #b45309;
+            border: 2px solid #b45309 !important;
+            border: none;
+        }
+
+        .close-btn:hover:not(:disabled) {
+            background: #fef3c7;
+        }
+
+        .close-btn:disabled {
+            background: #f5f5f5;
+            color: #aaa;
+            border-color: #ddd !important;
             cursor: not-allowed;
         }
 
         .cu-meta {
             font-size: 12px;
-            color: #6b7280;
+            color: #555;
             text-align: center;
+            margin-bottom: 10px;
         }
 
         .cu-meta span {
-            font-weight: 600;
-            color: #111827;
+            font-weight: bold;
+            color: #111;
         }
 
-        /* BALLOT UNIT */
-        .bu-header-row {
+        .ledger-link {
+            display: block;
+            text-align: center;
+            font-size: 12px;
+            color: #2563eb;
+            text-decoration: none;
+            border: 1px solid #bfdbfe;
+            border-radius: 4px;
+            padding: 6px;
+            background: #eff6ff;
+        }
+
+        .ledger-link:hover {
+            background: #dbeafe;
+        }
+
+        /* ── BALLOT UNIT ── */
+        .bu-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            font-size: 13px;
-            color: #374151;
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 10px;
         }
 
-        .bu-ready {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .bu-ready-dot {
-            width: 11px;
-            height: 11px;
+        .ready-dot {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            border: 1px solid #9ca3af;
-            background: #e5e7eb;
-            transition: all 0.25s ease;
+            background: #ccc;
+            border: 1px solid #aaa;
+            display: inline-block;
+            margin-left: 6px;
         }
 
-        .bu-ready-dot.on {
+        .ready-dot.on {
             background: #22c55e;
             border-color: #16a34a;
-            box-shadow: 0 0 8px rgba(34, 197, 94, 0.7);
         }
 
-        .ballot-table {
-            background: #e5e7eb;
-            border-radius: 14px;
-            padding: 10px;
+        .ballot-table-wrap {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
         }
 
         .ballot-paper-title {
+            background: #f9f9f9;
+            border-bottom: 1px solid #ddd;
             text-align: center;
-            font-weight: 600;
-            font-size: 13px;
-            color: #111827;
-            padding: 4px 0 8px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #555;
+            padding: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .ballot-scroll {
-            max-height: 480px;
+            max-height: 420px;
             overflow-y: auto;
-            background: #f3f4f6;
-            border-radius: 10px;
-            padding: 6px;
         }
 
         .ballot-row {
             display: grid;
-            grid-template-columns: 40px minmax(120px, 1fr) 80px 30px 80px;
+            grid-template-columns: 36px 1fr 60px 28px 70px;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             padding: 6px 10px;
-            border-bottom: 1px solid #e5e7eb;
-            background: #ffffff;
+            border-bottom: 1px solid #eee;
+            background: #fff;
+            font-size: 13px;
         }
 
-        .ballot-row:nth-child(2n) {
-            background: #f9fafb;
+        .ballot-row:nth-child(even) {
+            background: #fafafa;
         }
 
         .ballot-row:last-child {
@@ -187,307 +245,728 @@
 
         .cell-sn {
             text-align: center;
-            font-weight: 500;
-            color: #4b5563;
-            font-size: 13px;
+            color: #777;
+            font-size: 12px;
         }
 
         .cell-name {
-            font-size: 13px;
-            color: #111827;
+            color: #222;
         }
 
         .cell-symbol {
             text-align: center;
-            font-size: 18px;
-        }
-
-        .cell-lamp-wrap {
-            display: flex;
-            justify-content: center;
+            font-size: 16px;
         }
 
         .cell-lamp {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: #7f1d1d;
-            border: 1px solid #450a0a;
-            box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.4);
-            opacity: 0.25;
-            transition: opacity 0.2s ease, box-shadow 0.2s ease;
+            background: #ddd;
+            border: 1px solid #bbb;
+            margin: auto;
         }
 
         .cell-lamp.on {
-            opacity: 1;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+            background: #ef4444;
+            border-color: #b91c1c;
         }
 
-        .cell-button-wrap {
-            display: flex;
-            justify-content: flex-start;
-        }
-
-        .vote-button {
-            width: 56px;
-            height: 24px;
-            border-radius: 999px;
-            border: none;
-            background: #1d4ed8;
-            color: #ffffff;
+        .vote-btn {
+            padding: 4px 8px;
             font-size: 11px;
-            font-weight: 600;
+            font-weight: bold;
+            border: 1px solid #2563eb;
+            border-radius: 3px;
+            background: #eff6ff;
+            color: #2563eb;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
-            transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
         }
 
-        .vote-button:hover:not(.disabled) {
-            transform: translateY(-1px);
-            box-shadow: 0 3px 8px rgba(37, 99, 235, 0.6);
-            background: #1e40af;
+        .vote-btn:hover:not(.disabled) {
+            background: #dbeafe;
         }
 
-        .vote-button:active:not(.disabled) {
-            transform: translateY(0);
-            box-shadow: 0 1px 4px rgba(37, 99, 235, 0.5);
-        }
-
-        .vote-button.disabled {
-            background: #9ca3af;
+        .vote-btn.disabled {
+            background: #f5f5f5;
+            color: #aaa;
+            border-color: #ddd;
             cursor: not-allowed;
-            box-shadow: none;
         }
 
         .bu-note {
-            margin-top: 10px;
             font-size: 11px;
-            color: #6b7280;
+            color: #888;
             text-align: center;
+            margin-top: 8px;
         }
 
-        /* VVPAT */
+        /* ── VVPAT ── */
         .vvpat-window {
-            border-radius: 12px;
             border: 1px solid #fbbf24;
-            background: #fef9c3;
-            height: 210px;
-            padding: 16px;
+            border-radius: 4px;
+            background: #fffbeb;
+            height: 190px;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 12px;
+            color: #aaa;
             position: relative;
             overflow: hidden;
         }
 
         .vvpat-slip {
-            background: #ffffff;
-            border-radius: 6px;
+            background: #fff;
             border: 1px solid #f59e0b;
+            border-radius: 4px;
             padding: 10px 14px;
-            max-width: 220px;
-            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
-            opacity: 0;
-            transform: translateY(24px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            max-width: 200px;
             font-family: "Courier New", monospace;
+            text-align: center;
         }
 
-        .vvpat-slip.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .vvpat-slip-title {
-            font-size: 13px;
-            font-weight: 600;
+        .slip-title {
+            font-size: 11px;
+            font-weight: bold;
             color: #92400e;
             margin-bottom: 4px;
         }
 
-        .vvpat-slip-main {
-            font-size: 17px;
+        .slip-main {
+            font-size: 16px;
             color: #b45309;
             margin-bottom: 4px;
         }
 
-        .vvpat-slip-meta {
-            font-size: 11px;
-            color: #6b7280;
-        }
-
-        .vvpat-cut-label {
-            position: absolute;
-            right: 10px;
-            bottom: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #b91c1c;
+        .slip-meta {
+            font-size: 10px;
+            color: #78716c;
         }
 
         .vvpat-counter {
             text-align: center;
             font-size: 12px;
-            color: #92400e;
-            margin-top: 10px;
+            color: #888;
+            margin-top: 8px;
         }
 
-        /* Audit bar */
+        /* ── AUDIT BAR ── */
         .audit-bar {
             grid-column: 1 / -1;
-            margin-top: 20px;
+            margin-top: 12px;
             display: flex;
-            gap: 24px;
-            padding: 10px 18px;
-            border-radius: 999px;
-            background: #0f766e;
-            color: #ecfeff;
-            box-shadow: 0 4px 14px rgba(15, 118, 110, 0.5);
-            font-size: 13px;
+            gap: 0;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fff;
         }
 
         .audit-item {
             flex: 1;
             text-align: center;
+            padding: 12px 8px;
+            border-right: 1px solid #e5e7eb;
+        }
+
+        .audit-item:last-child {
+            border-right: none;
         }
 
         .audit-count {
             display: block;
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: bold;
+            color: #111;
         }
 
         .audit-label {
-            opacity: 0.85;
+            font-size: 11px;
+            color: #888;
+            margin-top: 2px;
         }
 
-        .audit-status-ok {
-            animation: auditPulse 2s infinite;
+        /* ── MODALS ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
 
-        @keyframes auditPulse {
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        /* Confirm dialog */
+        .confirm-box {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 28px;
+            max-width: 380px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .confirm-box h2 {
+            font-size: 17px;
+            color: #b91c1c;
+            margin-bottom: 10px;
+        }
+
+        .confirm-box p {
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .confirm-btns {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-cancel,
+        .btn-confirm {
+            flex: 1;
+            padding: 9px;
+            border-radius: 4px;
+            border: none;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background: #f3f4f6;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        .btn-confirm {
+            background: #b91c1c;
+            color: #fff;
+        }
+
+        .btn-cancel:hover {
+            background: #e5e7eb;
+        }
+
+        .btn-confirm:hover {
+            background: #991b1b;
+        }
+
+        /* Progress modal */
+        .progress-box {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            padding: 24px;
+            max-width: 560px;
+            width: 94%;
+            max-height: 92vh;
+            overflow-y: auto;
+        }
+
+        .progress-box h2 {
+            font-size: 16px;
+            font-weight: bold;
+            color: #111;
+            margin-bottom: 4px;
+        }
+
+        .progress-subtitle {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 16px;
+        }
+
+        .phase-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-bottom: 16px;
+        }
+
+        .phase-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 7px 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #555;
+            background: #fafafa;
+        }
+
+        .phase-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #888;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .phase-item.running {
+            color: #92400e;
+            background: #fffbeb;
+            border-color: #fcd34d;
+        }
+
+        .phase-item.running .phase-num {
+            border-color: #f59e0b;
+            color: #b45309;
+            animation: pulse-ring 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse-ring {
 
             0%,
             100% {
-                text-shadow: 0 0 4px rgba(255, 255, 255, 0.7);
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
             }
 
             50% {
-                text-shadow: 0 0 10px rgba(255, 255, 255, 1);
+                box-shadow: 0 0 0 4px rgba(245, 158, 11, 0);
             }
         }
 
-        @media (max-width: 1100px) {
+        .phase-item.done {
+            color: #166534;
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .phase-item.done .phase-num {
+            border-color: #22c55e;
+            color: #16a34a;
+            background: #dcfce7;
+        }
+
+        .phase-item.fail {
+            color: #991b1b;
+            background: #fef2f2;
+            border-color: #fecaca;
+        }
+
+        .phase-item.fail .phase-num {
+            border-color: #f87171;
+            color: #991b1b;
+            background: #fee2e2;
+        }
+
+        /* Tamper alert inside the phase item */
+        .tamper-alert {
+            display: none;
+            margin-top: 8px;
+            padding: 10px 12px;
+            background: #7f1d1d;
+            color: #fef2f2;
+            border-radius: 4px;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            word-break: break-all;
+        }
+
+        .tamper-alert.show {
+            display: block;
+        }
+
+        .tamper-alert .tamper-headline {
+            font-size: 13px;
+            font-weight: bold;
+            color: #fca5a5;
+            margin-bottom: 6px;
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .phase-text-wrap {
+            flex: 1;
+        }
+
+        .result-box {
+            display: none;
+            border: 1px solid #bbf7d0;
+            border-radius: 4px;
+            background: #f0fdf4;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            font-size: 12px;
+            font-family: "Courier New", monospace;
+        }
+
+        .result-box.tampered {
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid #d1fae5;
+            gap: 8px;
+        }
+
+        .result-box.tampered .result-row {
+            border-bottom-color: #fde8e8;
+        }
+
+        .result-row:last-child {
+            border-bottom: none;
+        }
+
+        .result-key {
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .result-val {
+            font-weight: bold;
+            color: #166534;
+            word-break: break-all;
+            max-width: 300px;
+            text-align: right;
+        }
+
+        .result-box.tampered .result-val {
+            color: #991b1b;
+        }
+
+        .result-val.mono {
+            font-size: 10px;
+        }
+
+        .done-btn {
+            width: 100%;
+            padding: 9px;
+            border: none;
+            border-radius: 4px;
+            background: #166534;
+            color: #fff;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .done-btn.tamper {
+            background: #991b1b;
+        }
+
+        .done-btn:hover {
+            opacity: 0.88;
+        }
+
+        /* VVPAT Final Slip in modal */
+        .vvpat-final-slip {
+            display: none;
+            background: #fff7ed;
+            border: 1px dashed #f59e0b;
+            border-radius: 4px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            font-family: "Courier New", monospace;
+            font-size: 11px;
+            color: #92400e;
+        }
+
+        .vvpat-final-slip.show {
+            display: block;
+        }
+
+        .vvpat-final-slip .slip-hdr {
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 6px;
+            border-bottom: 1px solid #fcd34d;
+            padding-bottom: 4px;
+        }
+
+        .vvpat-final-slip pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 960px) {
             .layout {
                 grid-template-columns: 1fr;
-            }
-
-            .audit-bar {
-                border-radius: 14px;
             }
         }
     </style>
 </head>
 
 <body>
+
+    <h1>Indian EVM Simulator</h1>
+
     <div class="layout">
+
         <!-- CONTROL UNIT -->
         <div class="panel">
-            <div class="panel-title">CONTROL UNIT (CU)</div>
-            <div class="panel-subtitle">Booth: {{ booth.booth_id }}</div>
+            <div class="panel-title">Control Unit (CU)</div>
 
             <div class="cu-display" id="cuDisplay">
                 EVM READY
                 <small>Press BALLOT to allow next voter</small>
             </div>
 
-            <div class="cu-ballot-wrap">
-                <button id="ballotBtn" class="ballot-btn" onclick="pressBallot()">BALLOT</button>
-            </div>
+            <div id="statusBadge" class="status-badge open">VOTING OPEN</div>
 
-            <div class="cu-meta">
+            <button id="ballotBtn" class="cu-btn ballot-btn" onclick="pressBallot()">BALLOT</button>
+            <button id="closeBtn" class="cu-btn close-btn" onclick="confirmClose()">CLOSE VOTING</button>
+
+            <div class="cu-meta" style="margin-top:10px;">
                 Total Votes Cast: <span id="totalVotes">0</span>
             </div>
+
+            <a href="/ledger/" class="ledger-link" target="_blank">View Ledger Blocks</a>
         </div>
 
         <!-- BALLOT UNIT -->
         <div class="panel">
-            <div class="panel-title">BALLOT UNIT (BU)</div>
-            <div class="bu-header-row">
-                <div>Dummy Ballot Paper</div>
-                <div class="bu-ready">
-                    <span>Ready</span>
-                    <span id="readyDot" class="bu-ready-dot"></span>
-                </div>
+            <div class="panel-title">Ballot Unit (BU)</div>
+
+            <div class="bu-header">
+                <span>Dummy Ballot Paper</span>
+                <span>Ready <span id="readyDot" class="ready-dot"></span></span>
             </div>
 
-            <div class="ballot-table">
-                <div class="ballot-paper-title">DUMMY BALLOT PAPER</div>
-                <div class="ballot-scroll" id="ballotRows">
-                    <!-- Rows will be created by JavaScript -->
-                </div>
+            <div class="ballot-table-wrap">
+                <div class="ballot-paper-title">Dummy Ballot Paper</div>
+                <div class="ballot-scroll" id="ballotRows"></div>
             </div>
 
-            <div class="bu-note">
-                Presiding Officer: press BALLOT on CU.<br>
-                Voter: when READY is ON, press blue button for your candidate.
+            <div class="bu-note" id="buNote">
+                Presiding Officer: press BALLOT.<br>
+                Voter: press blue VOTE button when Ready is ON.
             </div>
         </div>
 
         <!-- VVPAT -->
         <div class="panel">
-            <div class="panel-title">VVPAT UNIT</div>
-            <div class="panel-subtitle">Slip visible for 7 seconds</div>
+            <div class="panel-title">VVPAT Unit</div>
+            <div class="panel-title"
+                style="font-size:11px;border:none;padding:0;margin-bottom:8px;color:#888;font-weight:normal;text-transform:none;">
+                Slip visible for 7 seconds</div>
 
             <div class="vvpat-window" id="vvpatWindow">
-                <div style="font-size: 12px; color:#6b7280;">Waiting for vote...</div>
+                <span>Waiting for vote...</span>
             </div>
-            <div class="vvpat-counter">
-                Slips Printed: <span id="slipCount">0</span>
-            </div>
+
+            <div class="vvpat-counter">Slips Printed: <strong id="slipCount">0</strong></div>
         </div>
 
         <!-- AUDIT BAR -->
         <div class="audit-bar">
             <div class="audit-item">
                 <span class="audit-count" id="evmCount">0</span>
-                <span class="audit-label">EVM Votes</span>
+                <div class="audit-label">EVM Votes</div>
             </div>
             <div class="audit-item">
                 <span class="audit-count" id="vvpatCount">0</span>
-                <span class="audit-label">VVPAT Slips</span>
+                <div class="audit-label">VVPAT Slips</div>
             </div>
             <div class="audit-item">
                 <span class="audit-count" id="bamCount">0</span>
-                <span class="audit-label">BAM Signals</span>
+                <div class="audit-label">BAM Signals</div>
             </div>
-            <div class="audit-item audit-status-ok">
-                <span class="audit-count" id="auditStatus">✅</span>
-                <span class="audit-label">Three‑Way Match</span>
+            <div class="audit-item">
+                <span class="audit-count" id="auditStatus">OK</span>
+                <div class="audit-label">Three-Way Match</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- CONFIRM CLOSE DIALOG -->
+    <div class="modal-overlay" id="confirmOverlay">
+        <div class="confirm-box">
+            <h2>Close Voting?</h2>
+            <p>
+                This will permanently freeze voting, execute all 10 cryptographic
+                finalization phases, generate the Final Sealed Block,
+                and make the ledger read-only.<br><br>
+                <strong>This action cannot be undone.</strong>
+            </p>
+            <div class="confirm-btns">
+                <button class="btn-cancel" onclick="cancelClose()">Cancel</button>
+                <button class="btn-confirm" onclick="executeClose()">Yes, Close &amp; Seal</button>
             </div>
         </div>
     </div>
 
+    <!-- CLOSE PROGRESS MODAL -->
+    <div class="modal-overlay" id="closeModal">
+        <div class="progress-box">
+            <h2>Sealing Ledger...</h2>
+            <div class="progress-subtitle" id="modalSubtitle">Running cryptographic finalization phases</div>
+
+            <ul class="phase-list" id="phaseList">
+                <!-- Phase 1 -->
+                <li class="phase-item" id="ph1">
+                    <span class="phase-num">1</span>
+                    <div class="phase-text-wrap">
+                        Hardware Interrupt &amp; Voting Freeze
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            Voting_Enabled=FALSE &nbsp;|&nbsp; System_State=FINALIZING
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 2 -->
+                <li class="phase-item" id="ph2">
+                    <span class="phase-num">2</span>
+                    <div class="phase-text-wrap">
+                        Freeze Vote Ledger (Write-Protection)
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            Vote counter memory set to read-only
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 3 — REAL hash chain verification -->
+                <li class="phase-item" id="ph3">
+                    <span class="phase-num">3</span>
+                    <div class="phase-text-wrap">
+                        Recompute &amp; Verify Entire Hash Chain
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            SHA-256 recomputed for every block &mdash; tamper detection
+                        </div>
+                        <!-- Tamper alert injected here -->
+                        <div class="tamper-alert" id="tamperAlert">
+                            <div class="tamper-headline">⚠ TAMPER DETECTED</div>
+                            <div id="tamperDetail"></div>
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 4 -->
+                <li class="phase-item" id="ph4">
+                    <span class="phase-num">4</span>
+                    <div class="phase-text-wrap">
+                        Sort Party IDs (Lexicographic)
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            Fixed ordering: 01→PartyA, 02→PartyB, …
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 5 -->
+                <li class="phase-item" id="ph5">
+                    <span class="phase-num">5</span>
+                    <div class="phase-text-wrap">
+                        Deterministic Result String
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            EVM_ID|01:x₁|02:x₂|…|Secret &mdash; ASCII, no spaces
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 6 -->
+                <li class="phase-item" id="ph6">
+                    <span class="phase-num">6</span>
+                    <div class="phase-text-wrap">
+                        Result Hash — SHA-256(Result_String)
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            256-bit, deterministic, avalanche guaranteed
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 7 -->
+                <li class="phase-item" id="ph7">
+                    <span class="phase-num">7</span>
+                    <div class="phase-text-wrap">
+                        Bind to Vote Chain — SHA-256(Hₙ ‖ Result_Hash)
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            Final_Commitment_Hash ties tally to full chain
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 8 -->
+                <li class="phase-item" id="ph8">
+                    <span class="phase-num">8</span>
+                    <div class="phase-text-wrap">
+                        Digital Signature — HMAC-SHA256(Commitment, PrivKey)
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            Secure element signs; prevents device replacement
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 9 -->
+                <li class="phase-item" id="ph9">
+                    <span class="phase-num">9</span>
+                    <div class="phase-text-wrap">
+                        Create Final Block (Block n+1)
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            Appended with EVM_ID, timestamp, hashes, signature, tamper_flag
+                        </div>
+                    </div>
+                </li>
+                <!-- Phase 10 -->
+                <li class="phase-item" id="ph10">
+                    <span class="phase-num">10</span>
+                    <div class="phase-text-wrap">
+                        Lock System &amp; Print VVPAT Commitment Slip
+                        <div style="font-size:10px;color:#999;margin-top:2px;">
+                            System_State=SEALED &nbsp;|&nbsp; Bootloader locked
+                        </div>
+                    </div>
+                </li>
+            </ul>
+
+            <!-- VVPAT Final commitment slip -->
+            <div class="vvpat-final-slip" id="vvpatFinalSlip">
+                <div class="slip-hdr">▣ VVPAT FINAL COMMITMENT SLIP ▣</div>
+                <pre id="vvpatSlipContent"></pre>
+            </div>
+
+            <!-- Summary result box -->
+            <div class="result-box" id="resultBox"></div>
+
+            <button class="done-btn" id="doneBtn" style="display:none;" onclick="dismissModal()">
+                Done — View Ledger
+            </button>
+        </div>
+    </div>
+
     {{ booth|json_script:"booth-data" }}
+
     <script>
         const BOOTH_ID = "{{ booth.booth_id }}";
 
-        let evmState = "idle"; // idle, ballot_released, selecting, processing
+        let evmState = "idle";
         let totalVotes = 0;
         let slipPrinted = 0;
+        let votingSealed = false;
 
         const boothData = JSON.parse(document.getElementById('booth-data').textContent);
         const candidateData = boothData.candidates.map((c, i) => ({
-            sn: i + 1,
-            id: c.candidate_id,
-            name: c.name,
-            symbol: c.symbol
+            sn: i + 1, id: c.candidate_id, name: c.name, symbol: c.symbol
         }));
 
+        /* ── BUILD BALLOT ROWS ── */
         function buildBallotRows() {
             const container = document.getElementById("ballotRows");
             container.innerHTML = "";
-
             candidateData.forEach(c => {
                 const row = document.createElement("div");
                 row.className = "ballot-row";
@@ -495,11 +974,9 @@
                 <div class="cell-sn">${c.sn}</div>
                 <div class="cell-name">${c.name}</div>
                 <div class="cell-symbol">${c.symbol}</div>
-                <div class="cell-lamp-wrap">
-                    <div class="cell-lamp" id="lamp-${c.id}"></div>
-                </div>
-                <div class="cell-button-wrap">
-                    <button class="vote-button" id="btn-${c.id}" onclick="vote('${c.id}')">VOTE</button>
+                <div class="cell-lamp" id="lamp-${c.id}"></div>
+                <div>
+                    <button class="vote-btn" id="btn-${c.id}" onclick="vote('${c.id}')">VOTE</button>
                 </div>
             `;
                 container.appendChild(row);
@@ -517,32 +994,30 @@
 
         function clearAllLamps() {
             candidateData.forEach(c => {
-                const lamp = document.getElementById(`lamp-${c.id}`);
-                if (lamp) lamp.classList.remove("on");
+                const l = document.getElementById(`lamp-${c.id}`);
+                if (l) l.classList.remove("on");
             });
         }
 
+        /* ── BALLOT BUTTON ── */
         function pressBallot() {
-            if (evmState !== "idle") return;
-
+            if (evmState !== "idle" || votingSealed) return;
             evmState = "ballot_released";
             document.getElementById("cuDisplay").innerHTML =
-                "BALLOT RELEASED<br><small>Voter may vote now</small>";
+                "BALLOT RELEASED<small>Voter may vote now</small>";
             document.getElementById("ballotBtn").disabled = true;
-
             document.getElementById("readyDot").classList.add("on");
             setAllButtons(true);
             clearAllLamps();
-
             setTimeout(() => { evmState = "selecting"; }, 200);
         }
 
+        /* ── CAST VOTE ── */
         async function vote(candidateId) {
             if (evmState !== "selecting") {
-                alert("Presiding Officer must press BALLOT on Control Unit first.");
+                alert("Press BALLOT on Control Unit first.");
                 return;
             }
-
             evmState = "processing";
             setAllButtons(false);
 
@@ -550,30 +1025,27 @@
                 const res = await fetch(`/cast-vote/${BOOTH_ID}/`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        candidateID: candidateId,
-                        voterToken: "v_" + Date.now()
-                    })
+                    body: JSON.stringify({ candidateID: candidateId, voterToken: "v_" + Date.now() })
                 });
-
                 const data = await res.json();
+
+                if (res.status === 403) {
+                    alert("Voting is CLOSED. No more votes can be cast.");
+                    sealUI(); return;
+                }
                 if (data.status !== "SUCCESS") {
-                    alert("Vote error: " + (data.error || "Unknown error"));
-                    resetEVM();
-                    return;
+                    alert("Vote error: " + (data.error || "Unknown"));
+                    resetEVM(); return;
                 }
 
                 totalVotes += 1;
                 document.getElementById("totalVotes").textContent = totalVotes;
-
-                // Turn ON red lamp for that candidate
                 clearAllLamps();
                 const lamp = document.getElementById(`lamp-${candidateId}`);
                 if (lamp) lamp.classList.add("on");
 
-                // Show VVPAT slip
                 const cand = candidateData.find(c => c.id === candidateId);
-                showSlip(cand, data.sequence);
+                showSlip(cand, data.sequence, data.block_number, data.block_hash);
 
             } catch (e) {
                 alert("Network error: " + e);
@@ -581,32 +1053,31 @@
             }
         }
 
-        function showSlip(candidate, sequence) {
+        function showSlip(candidate, sequence, blockNo, blockHash) {
             slipPrinted += 1;
             document.getElementById("slipCount").textContent = slipPrinted;
 
             const win = document.getElementById("vvpatWindow");
             win.innerHTML = `
-            <div class="vvpat-slip show" id="vvpatSlip">
-                <div class="vvpat-slip-title">VVPAT SLIP</div>
-                <div class="vvpat-slip-main">${candidate.symbol}  ${candidate.name}</div>
-                <div class="vvpat-slip-meta">Seq: ${sequence}</div>
+            <div class="vvpat-slip">
+                <div class="slip-title">VVPAT SLIP</div>
+                <div class="slip-main">${candidate.symbol} ${candidate.name}</div>
+                <div class="slip-meta">Seq: ${sequence} | Block #${blockNo}</div>
+                <div class="slip-meta">${blockHash || ""}</div>
             </div>
-            <div class="vvpat-cut-label">CUT &amp; DROP</div>
         `;
-
-            // Hide after exactly 7 seconds
             setTimeout(() => {
-                document.getElementById("vvpatWindow").innerHTML =
-                    '<div style="font-size:12px;color:#6b7280;">Slip stored in sealed box</div>';
+                document.getElementById("vvpatWindow").innerHTML = "<span>Slip stored in sealed box</span>";
                 resetEVM();
             }, 7000);
         }
 
         function resetEVM() {
+            if (votingSealed) return;
             evmState = "idle";
             document.getElementById("cuDisplay").innerHTML =
-                "EVM READY<br><small>Press BALLOT to allow next voter</small>";
+                "EVM READY<small>Press BALLOT to allow next voter</small>";
+            document.getElementById("cuDisplay").classList.remove("sealed");
             document.getElementById("ballotBtn").disabled = false;
             document.getElementById("readyDot").classList.remove("on");
             clearAllLamps();
@@ -614,6 +1085,213 @@
             refreshStatus();
         }
 
+        /* ── CLOSE VOTING ── */
+        function confirmClose() {
+            if (votingSealed) { alert("Already sealed."); return; }
+            document.getElementById("confirmOverlay").classList.add("active");
+        }
+
+        function cancelClose() {
+            document.getElementById("confirmOverlay").classList.remove("active");
+        }
+
+        /**
+         * executeClose()
+         *
+         * Phase-by-phase execution:
+         *   Phases 1-2: cosmetic (real enforcement is server-side via booth status)
+         *   Phase 3:    REAL API call to /verify-chain/ — actual SHA-256 recomputation
+         *   Phases 4-8: cosmetic (all computed server-side inside close_voting)
+         *   Phase 9:    REAL API call to /close-voting/ — creates final block,
+         *               stores commitment + signature in DB
+         *   Phase 10:   cosmetic + show VVPAT final slip from server response
+         */
+        async function executeClose() {
+            document.getElementById("confirmOverlay").classList.remove("active");
+            document.getElementById("closeModal").classList.add("active");
+            document.getElementById("ballotBtn").disabled = true;
+            document.getElementById("closeBtn").disabled = true;
+            setAllButtons(false);
+
+            // ── Phase 1: Hardware Interrupt / Voting Freeze ──
+            markPhase("ph1", "running", 1);
+            await delay(500);
+            markPhase("ph1", "done", "✓");
+
+            // ── Phase 2: Freeze Vote Ledger ──
+            markPhase("ph2", "running", 2);
+            await delay(400);
+            markPhase("ph2", "done", "✓");
+
+            // ── Phase 3: REAL Hash Chain Verification ──
+            markPhase("ph3", "running", 3);
+            let chainResult;
+            try {
+                const chainRes = await fetch(`/verify-chain/${BOOTH_ID}/`);
+                chainResult = await chainRes.json();
+            } catch (e) {
+                markPhase("ph3", "fail", "✗");
+                document.getElementById("modalSubtitle").textContent = "Network error: " + e;
+                return;
+            }
+
+            const chainOk = chainResult.integrity_flag === "PASS";
+            if (!chainOk) {
+                // Show tamper alert with exact block number
+                const alertEl = document.getElementById("tamperAlert");
+                const detailEl = document.getElementById("tamperDetail");
+                alertEl.classList.add("show");
+                detailEl.textContent = chainResult.tamper_detail ||
+                    `Tamper detected at Block #${chainResult.tamper_block_number}`;
+                markPhase("ph3", "fail", "✗");
+                // Show subtitle
+                document.getElementById("modalSubtitle").textContent =
+                    `⚠ TAMPER DETECTED at Block #${chainResult.tamper_block_number} — Finalization aborted`;
+
+                // Still proceed to generate final block with FAIL flag (per spec)
+                // but show the final block with the tamper info
+            } else {
+                markPhase("ph3", "done", "✓");
+                document.getElementById("modalSubtitle").textContent =
+                    `Hash chain verified — ${chainResult.total_vote_blocks} blocks OK`;
+            }
+
+            await delay(600);
+
+            // ── Phase 4: Sort Party IDs ──
+            markPhase("ph4", "running", 4);
+            await delay(300);
+            markPhase("ph4", "done", "✓");
+
+            // ── Phase 5: Deterministic Result String ──
+            markPhase("ph5", "running", 5);
+            await delay(350);
+            markPhase("ph5", "done", "✓");
+
+            // ── Phase 6: Result Hash ──
+            markPhase("ph6", "running", 6);
+            await delay(400);
+            markPhase("ph6", "done", "✓");
+
+            // ── Phase 7: Bind to Vote Chain ──
+            markPhase("ph7", "running", 7);
+            await delay(350);
+            markPhase("ph7", "done", "✓");
+
+            // ── Phase 8: Digital Signature ──
+            markPhase("ph8", "running", 8);
+            await delay(450);
+            markPhase("ph8", "done", "✓");
+
+            // ── Phase 9: REAL close-voting API + Create Final Block ──
+            markPhase("ph9", "running", 9);
+            let result;
+            try {
+                const res = await fetch(`/close-voting/${BOOTH_ID}/`, { method: "POST" });
+                result = await res.json();
+
+                if (!res.ok) {
+                    markPhase("ph9", "fail", "✗");
+                    document.getElementById("modalSubtitle").textContent =
+                        "Error: " + (result.error || "Unknown");
+                    return;
+                }
+            } catch (e) {
+                markPhase("ph9", "fail", "✗");
+                document.getElementById("modalSubtitle").textContent = "Network error: " + e;
+                return;
+            }
+
+            markPhase("ph9", "done", "✓");
+            await delay(300);
+
+            // ── Phase 10: Lock System + VVPAT Final Slip ──
+            markPhase("ph10", "running", 10);
+            await delay(500);
+            markPhase("ph10", "done", "✓");
+
+            // Show VVPAT Final Commitment Slip
+            if (result.vvpat_slip) {
+                const slipEl = document.getElementById("vvpatFinalSlip");
+                document.getElementById("vvpatSlipContent").textContent = result.vvpat_slip;
+                slipEl.classList.add("show");
+            }
+
+            // Build result summary
+            const intOk = result.integrity_flag === "PASS";
+            const box = document.getElementById("resultBox");
+            if (!intOk) box.classList.add("tampered");
+
+            const rows = [
+                ["Integrity Flag", intOk ? "✓ PASS" : `✗ FAIL — Block #${result.tamper_block_number} tampered`],
+                ["Total Votes", result.total_votes],
+                ["Result String", result.result_string],
+                ["Final Block #", result.final_block_number],
+                ["Last Vote Hash (Hₙ)", result.last_vote_block_hash],
+                ["Final Commitment Hash", result.final_commitment_hash],
+                ["Result Hash", result.result_hash],
+                ["Digital Signature", result.digital_signature],
+                ["Ledger Status", "SEALED"],
+            ];
+
+            box.innerHTML = rows.map(([k, v]) =>
+                `<div class="result-row">
+                    <span class="result-key">${k}</span>
+                    <span class="result-val mono">${escHtml(String(v))}</span>
+                 </div>`
+            ).join("");
+            box.classList.add("show");
+
+            const doneBtn = document.getElementById("doneBtn");
+            if (!intOk) doneBtn.classList.add("tamper");
+            doneBtn.style.display = "block";
+
+            document.getElementById("modalSubtitle").textContent = intOk
+                ? "Ledger sealed successfully. All phases complete."
+                : `⚠ Ledger sealed with TAMPER FLAG. Block #${result.tamper_block_number} compromised.`;
+
+            sealUI();
+        }
+
+        function escHtml(s) {
+            return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        }
+
+        function markPhase(id, cls, label) {
+            const el = document.getElementById(id);
+            const num = el.querySelector(".phase-num");
+            // preserve running/done/fail classes; remove others
+            el.className = "phase-item " + cls;
+            num.textContent = label;
+        }
+
+        function sealUI() {
+            votingSealed = true;
+            const cu = document.getElementById("cuDisplay");
+            cu.innerHTML = "VOTING CLOSED<small>Ledger is SEALED</small>";
+            cu.classList.add("sealed");
+            document.getElementById("ballotBtn").disabled = true;
+            const cb = document.getElementById("closeBtn");
+            cb.disabled = true;
+            cb.textContent = "SEALED";
+
+            const badge = document.getElementById("statusBadge");
+            badge.textContent = "VOTING SEALED";
+            badge.className = "status-badge sealed";
+
+            document.getElementById("buNote").textContent =
+                "Voting is permanently closed. No more votes can be cast.";
+            setAllButtons(false);
+        }
+
+        function dismissModal() {
+            document.getElementById("closeModal").classList.remove("active");
+            window.open('/ledger/', '_blank');
+        }
+
+        function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        /* ── STATUS POLLING ── */
         async function refreshStatus() {
             try {
                 const res = await fetch(`/status/${BOOTH_ID}/`);
@@ -621,12 +1299,11 @@
                 document.getElementById("evmCount").textContent = data.evm_votes;
                 document.getElementById("vvpatCount").textContent = data.vvpat_slips;
                 document.getElementById("bamCount").textContent = data.bam_signals;
-                document.getElementById("auditStatus").textContent =
-                    data.all_match ? "✅" : "⚠️";
+                document.getElementById("auditStatus").textContent = data.all_match ? "OK" : "MISMATCH";
+                if (data.voting_status === "SEALED" && !votingSealed) sealUI();
             } catch (e) { }
         }
 
-        // Init
         buildBallotRows();
         setAllButtons(false);
         refreshStatus();

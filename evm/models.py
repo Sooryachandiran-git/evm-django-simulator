@@ -14,6 +14,9 @@ class Booth(models.Model):
     ac_name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
     
+    # Voting status: OPEN / CLOSED / SEALED
+    voting_status = models.CharField(max_length=20, default='OPEN')
+    
     class Meta:
         ordering = ['booth_id']
     
@@ -69,6 +72,56 @@ class Signal(models.Model):
     
     def __str__(self):
         return f"Signal for Vote #{self.vote.sequence}"
+
+# ====================================
+# LEDGER BLOCK MODEL
+# ====================================
+
+class LedgerBlock(models.Model):
+    """Internal blockchain block stored per vote or final seal"""
+    BLOCK_TYPE_VOTE = 'VOTE'
+    BLOCK_TYPE_FINAL = 'FINAL'
+    BLOCK_TYPES = [(BLOCK_TYPE_VOTE, 'Vote Block'), (BLOCK_TYPE_FINAL, 'Final Block')]
+
+    booth = models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='ledger_blocks')
+    block_number = models.IntegerField()
+    block_type = models.CharField(max_length=10, choices=BLOCK_TYPES, default=BLOCK_TYPE_VOTE)
+
+    # Vote block fields
+    candidate_id = models.CharField(max_length=20, blank=True)
+    timestamp = models.BigIntegerField(default=0)
+
+    # Final block fields
+    total_votes = models.IntegerField(default=0)
+    result_hash = models.CharField(max_length=64, blank=True)
+    integrity_flag = models.CharField(max_length=10, blank=True)
+    result_string = models.TextField(blank=True)
+
+    # Cryptographic commitment fields (Phase 6 & 7 of close-voting spec)
+    last_vote_block_hash = models.CharField(max_length=64, blank=True,
+        help_text="Hash of last VOTE block (Hn) — anchor for final commitment")
+    final_commitment_hash = models.CharField(max_length=64, blank=True,
+        help_text="SHA256(Last_Vote_Block_Hash || Result_Hash) — binds tally to chain")
+    digital_signature = models.CharField(max_length=64, blank=True,
+        help_text="HMAC-SHA256 of Final_Block_Hash using Device Private Key")
+
+    # Tamper detection
+    tamper_block_number = models.IntegerField(null=True, blank=True,
+        help_text="Block number where hash mismatch was detected (null = no tamper)")
+
+    # Common
+    previous_hash = models.CharField(max_length=64)
+    current_hash = models.CharField(max_length=64)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('booth', 'block_number')
+        ordering = ['block_number']
+
+    def __str__(self):
+        return f"Block #{self.block_number} [{self.block_type}]"
+
 
 # ====================================
 # AUDIT MODELS (Django)

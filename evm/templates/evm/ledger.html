@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EVM Ledger — Block Explorer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            color: #222;
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: #fff;
+            border-bottom: 1px solid #ccc;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-title {
+            font-size: 16px;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .header-sub {
+            font-size: 12px;
+            color: #888;
+            margin-top: 2px;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .badge {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 3px;
+            border: 1px solid;
+        }
+
+        .badge-open {
+            background: #e6f9ee;
+            color: #1a7a3a;
+            border-color: #a3d9b5;
+        }
+
+        .badge-sealed {
+            background: #fdecea;
+            color: #b91c1c;
+            border-color: #f5a9a5;
+        }
+
+        .back-link {
+            font-size: 13px;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ── STATS BAR ── */
+        .stats-bar {
+            display: flex;
+            gap: 0;
+            max-width: 1100px;
+            margin: 20px auto 0;
+            padding: 0 20px;
+        }
+
+        .stat-card {
+            flex: 1;
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 14px 16px;
+            text-align: center;
+        }
+
+        .stat-card:not(:last-child) {
+            border-right: none;
+        }
+
+        .stat-card:first-child {
+            border-radius: 6px 0 0 6px;
+        }
+
+        .stat-card:last-child {
+            border-radius: 0 6px 6px 0;
+            border-right: 1px solid #ccc;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #111;
+        }
+
+        /* ── MAIN ── */
+        main {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .refresh-btn {
+            font-size: 12px;
+            padding: 5px 12px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            background: #fff;
+            color: #555;
+            cursor: pointer;
+        }
+
+        .refresh-btn:hover {
+            background: #f3f4f6;
+        }
+
+        /* ── CHAIN ── */
+        .chain {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .block-card {
+            background: #fff;
+            border: 1px solid #d1d5db;
+            border-left: 4px solid #2563eb;
+            border-radius: 4px;
+            padding: 12px 16px;
+        }
+
+        .block-card.final {
+            border-left-color: #b45309;
+            background: #fffdf5;
+        }
+
+        .block-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .block-id {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .block-num {
+            font-size: 14px;
+            font-weight: bold;
+            color: #111;
+        }
+
+        .block-type {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 7px;
+            border-radius: 2px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .block-type.vote {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1px solid #bfdbfe;
+        }
+
+        .block-type.final {
+            background: #fef3c7;
+            color: #b45309;
+            border: 1px solid #fcd34d;
+        }
+
+        .integrity-ok {
+            font-size: 11px;
+            color: #166534;
+            font-weight: bold;
+        }
+
+        .integrity-fail {
+            font-size: 11px;
+            color: #b91c1c;
+            font-weight: bold;
+        }
+
+        .block-ts {
+            font-size: 11px;
+            color: #888;
+            font-family: "Courier New", monospace;
+        }
+
+        /* FIELDS */
+        .block-fields {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+        }
+
+        .field {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 3px;
+            padding: 7px 10px;
+        }
+
+        .field-label {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 3px;
+        }
+
+        .field-value {
+            font-size: 12px;
+            color: #222;
+            font-family: "Courier New", monospace;
+            word-break: break-all;
+        }
+
+        .field-full {
+            grid-column: span 2;
+        }
+
+        .hash-val {
+            font-size: 10px;
+            color: #555;
+        }
+
+        /* FINAL BANNER */
+        .final-banner {
+            background: #fef3c7;
+            border: 1px solid #fcd34d;
+            border-radius: 4px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #92400e;
+        }
+
+        /* CONNECTOR */
+        .connector {
+            text-align: center;
+            color: #ccc;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        /* EMPTY / LOADING */
+        .empty {
+            text-align: center;
+            padding: 60px;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* COPY BUTTON */
+        .copy-btn {
+            background: none;
+            border: none;
+            font-size: 10px;
+            color: #aaa;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+
+        .copy-btn:hover {
+            color: #555;
+        }
+
+        /* TOAST */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #222;
+            color: #fff;
+            font-size: 12px;
+            padding: 8px 16px;
+            border-radius: 4px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        @media (max-width: 700px) {
+            .stats-bar {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .stat-card {
+                border-radius: 4px !important;
+                border-right: 1px solid #ccc !important;
+            }
+
+            .block-fields {
+                grid-template-columns: 1fr;
+            }
+
+            .field-full {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <div class="header-title">EVM Ledger — Block Explorer</div>
+            <div class="header-sub" id="headerSub">Loading...</div>
+        </div>
+        <div class="header-right">
+            <span class="badge badge-open" id="statusBadge">OPEN</span>
+            <a href="/" class="back-link">&larr; Back to EVM</a>
+        </div>
+    </header>
+
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-label">Total Blocks</div>
+            <div class="stat-value" id="statTotal">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Vote Blocks</div>
+            <div class="stat-value" id="statVote">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Status</div>
+            <div class="stat-value" id="statStatus">—</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Chain Height</div>
+            <div class="stat-value" id="statHeight">—</div>
+        </div>
+    </div>
+
+    <main>
+        <div class="section-header">
+            <div class="section-title">Blockchain Ledger</div>
+            <button class="refresh-btn" onclick="loadBlocks()">Refresh</button>
+        </div>
+
+        <div id="chain">
+            <div class="empty">Loading blocks...</div>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    {{ booth|json_script:"booth-data" }}
+
+    <script>
+        const boothEl = document.getElementById('booth-data');
+        const boothData = boothEl ? JSON.parse(boothEl.textContent) : null;
+        const BOOTH_ID = boothData ? boothData.booth_id : "";
+
+        let autoTimer = null;
+
+        async function loadBlocks() {
+            try {
+                const res = await fetch(`/ledger/blocks/${BOOTH_ID}/`);
+                const data = await res.json();
+
+                document.getElementById("headerSub").textContent =
+                    `Booth: ${data.booth_id}  |  Status: ${data.voting_status}`;
+
+                const voteBlocks = data.blocks.filter(b => b.block_type === "VOTE").length;
+
+                document.getElementById("statTotal").textContent = data.total_blocks;
+                document.getElementById("statVote").textContent = voteBlocks;
+                document.getElementById("statStatus").textContent = data.voting_status;
+                document.getElementById("statHeight").textContent =
+                    data.blocks.length > 0 ? data.blocks[data.blocks.length - 1].block_number : 0;
+
+                const badge = document.getElementById("statusBadge");
+                if (data.voting_status === "SEALED") {
+                    badge.textContent = "SEALED";
+                    badge.className = "badge badge-sealed";
+                    clearInterval(autoTimer);
+                } else {
+                    badge.textContent = "OPEN";
+                    badge.className = "badge badge-open";
+                }
+
+                renderChain(data.blocks);
+
+            } catch (e) {
+                document.getElementById("chain").innerHTML =
+                    `<div class="empty">Error loading blocks: ${e}</div>`;
+            }
+        }
+
+        function renderChain(blocks) {
+            const container = document.getElementById("chain");
+
+            if (blocks.length === 0) {
+                container.innerHTML = `<div class="empty">No blocks yet. Cast a vote to create the first block.</div>`;
+                return;
+            }
+
+            const frag = document.createDocumentFragment();
+
+            blocks.forEach((block, idx) => {
+                const isFinal = block.block_type === "FINAL";
+
+                if (isFinal) {
+                    const banner = document.createElement("div");
+                    banner.className = "final-banner";
+                    banner.textContent = "Final Sealed Block — Chain is permanently closed.";
+                    frag.appendChild(banner);
+                }
+
+                const card = document.createElement("div");
+                card.className = "block-card" + (isFinal ? " final" : "");
+
+                card.innerHTML = `
+                <div class="block-top">
+                    <div class="block-id">
+                        <span class="block-num">Block #${block.block_number}</span>
+                        <span class="block-type ${isFinal ? 'final' : 'vote'}">${isFinal ? 'FINAL' : 'VOTE'}</span>
+                        ${isFinal ? renderIntegrity(block.integrity_flag) : ""}
+                    </div>
+                    <span class="block-ts">${fmtTime(block.created_at)}</span>
+                </div>
+                ${renderFields(block)}
+            `;
+
+                frag.appendChild(card);
+
+                if (idx < blocks.length - 1) {
+                    const conn = document.createElement("div");
+                    conn.className = "connector";
+                    conn.textContent = "|";
+                    frag.appendChild(conn);
+                }
+            });
+
+            container.innerHTML = "";
+            container.appendChild(frag);
+        }
+
+        function renderIntegrity(flag) {
+            if (flag === "PASS") return `<span class="integrity-ok">Integrity: PASS</span>`;
+            if (flag === "FAIL") return `<span class="integrity-fail">Integrity: FAIL</span>`;
+            return "";
+        }
+
+        function renderFields(block) {
+            if (block.block_type === "FINAL") {
+                return `
+            <div class="block-fields">
+                ${f("Total Votes", block.total_votes)}
+                ${f("Result String", block.result_string || "—")}
+                ${fHash("Result Hash", block.result_hash)}
+                ${fHash("Previous Hash", block.previous_hash)}
+                ${fHash("Block Hash", block.current_hash)}
+            </div>`;
+            }
+            return `
+        <div class="block-fields">
+            ${f("Candidate ID", block.candidate_id)}
+            ${f("Timestamp", block.timestamp ? new Date(block.timestamp).toISOString().replace("T", " ").slice(0, 19) : "—")}
+            ${fHash("Previous Hash", block.previous_hash)}
+            ${fHash("Block Hash", block.current_hash)}
+        </div>`;
+        }
+
+        function f(label, value) {
+            return `<div class="field">
+            <div class="field-label">${label}</div>
+            <div class="field-value">${esc(String(value))}</div>
+        </div>`;
+        }
+
+        function fHash(label, hash) {
+            return `<div class="field field-full">
+            <div class="field-label">${label}</div>
+            <div class="field-value hash-val">
+                ${hash || "—"}
+                ${hash ? `<button class="copy-btn" onclick="copyText('${hash}')">[copy]</button>` : ""}
+            </div>
+        </div>`;
+        }
+
+        function fmtTime(iso) {
+            if (!iso) return "—";
+            return new Date(iso).toLocaleString('en-IN', { hour12: false });
+        }
+
+        function esc(s) {
+            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => showToast("Copied!"))
+                .catch(() => showToast("Copy failed"));
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById("toast");
+            t.textContent = msg;
+            t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 2000);
+        }
+
+        if (BOOTH_ID) {
+            loadBlocks();
+            autoTimer = setInterval(loadBlocks, 3000);
+        } else {
+            document.getElementById("chain").innerHTML =
+                `<div class="empty">No booth configured.</div>`;
+        }
+    </script>
+
+</body>
+
+</html>
