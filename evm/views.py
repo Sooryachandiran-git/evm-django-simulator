@@ -341,15 +341,13 @@ def close_voting(request, booth_id):
         final_block_number = (last_block.block_number + 1) if last_block else 1
         previous_hash = last_block.current_hash if last_block else ("0" * 64)
 
+        timestamp_close = int(time.time() * 1000)
         final_block_hash = sha256(
-            final_block_number,
+            booth.evm_id,
             total_votes,
             result_hash,
-            integrity_flag,
             last_vote_block_hash,
-            final_commitment_hash,
-            close_ts,
-            previous_hash
+            timestamp_close
         )
 
         final_block = LedgerBlock.objects.create(
@@ -357,7 +355,7 @@ def close_voting(request, booth_id):
             block_number=final_block_number,
             block_type=LedgerBlock.BLOCK_TYPE_FINAL,
             candidate_id="",
-            timestamp=int(time.time() * 1000),
+            timestamp=timestamp_close,
             total_votes=total_votes,
             result_hash=result_hash,
             integrity_flag=integrity_flag,
@@ -416,6 +414,74 @@ def close_voting(request, booth_id):
             "final_block_hash": final_block_hash,
             # Phase 10 - VVPAT final slip
             "vvpat_slip": "\n".join(vvpat_slip_lines),
+        })
+
+    except Booth.DoesNotExist:
+        return JsonResponse({"error": "Booth not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=400)
+
+
+@csrf_exempt
+def publish_result(request, booth_id):
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST required"}, status=405)
+
+    try:
+        booth = Booth.objects.get(booth_id=booth_id)
+
+        if booth.voting_status != 'SEALED':
+            return JsonResponse({"error": "Voting must be SEALED before publishing result."}, status=400)
+
+        # ── Phase 1: Recompute Per-Vote Hash Chain ──
+        chain_result = _verify_chain_internal(booth)
+        recomputed_last_vote_hash = chain_result["last_vote_block_hash"]
+        
+        final_block = LedgerBlock.objects.get(booth=booth, block_type=LedgerBlock.BLOCK_TYPE_FINAL)
+
+        if recomputed_last_vote_hash != final_block.last_vote_block_hash:
+            return JsonResponse({"error": "TAMPER DETECTED: Last Vote Block Hash Mismatch", "phase": 1}, status=400)
+
+        # ── Phase 2 & 3: Form Result String & Compute Result Hash ──
+        candidates = Candidate.objects.filter(booth=booth).order_by('candidate_id')
+        result_parts = [f"{c.candidate_id}:{c.vote_count}" for c in candidates]
+        result_string = "|".join(result_parts)
+        full_result_string = f"{booth.evm_id}|{result_string}|{DEVICE_SECRET}"
+        
+        recomputed_result_hash = hashlib.sha256(full_result_string.encode('utf-8')).hexdigest()
+
+        if recomputed_result_hash != final_block.result_hash:
+            return JsonResponse({"error": "COUNTER TAMPER DETECTED: Result Hash Mismatch", "phase": 3}, status=400)
+
+        # ── Phase 4: Recompute Final Block Hash ──
+        recomputed_final_block_hash = sha256(
+            booth.evm_id,
+            final_block.total_votes,
+            recomputed_result_hash,
+            final_block.last_vote_block_hash,
+            final_block.timestamp
+        )
+
+        if recomputed_final_block_hash != final_block.current_hash:
+            return JsonResponse({"error": "FINAL BLOCK MISMATCH", "phase": 4}, status=400)
+
+        # ── Phase 5: Verify Signature ──
+        expected_digital_signature = hmac.new(
+            DEVICE_PRIVATE_KEY.encode('utf-8'),
+            final_block.final_commitment_hash.encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
+
+        if final_block.digital_signature != expected_digital_signature:
+            return JsonResponse({"error": "SIGNATURE INVALID", "phase": 5}, status=400)
+
+        # All verifications OK
+        return JsonResponse({
+            "status": "SUCCESS",
+            "results": [{"id": c.candidate_id, "name": c.name, "votes": c.vote_count} for c in candidates],
+            "commitment_token": final_block.final_commitment_hash,
+            "timestamp_close": datetime.fromtimestamp(final_block.timestamp / 1000.0, timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "total_votes": final_block.total_votes
         })
 
     except Booth.DoesNotExist:

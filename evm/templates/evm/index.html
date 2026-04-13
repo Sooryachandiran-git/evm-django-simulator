@@ -738,6 +738,8 @@
 
             <button id="ballotBtn" class="cu-btn ballot-btn" onclick="pressBallot()">BALLOT</button>
             <button id="closeBtn" class="cu-btn close-btn" onclick="confirmClose()">CLOSE VOTING</button>
+            <button id="resultBtn" class="cu-btn close-btn" style="border-color:#166534 !important; color:#166534;"
+                onclick="publishResult()" disabled>PUBLISH RESULT</button>
 
             <div class="cu-meta" style="margin-top:10px;">
                 Total Votes Cast: <span id="totalVotes">0</span>
@@ -1282,6 +1284,63 @@
             document.getElementById("buNote").textContent =
                 "Voting is permanently closed. No more votes can be cast.";
             setAllButtons(false);
+
+            const btnResult = document.getElementById("resultBtn");
+            if (btnResult) btnResult.disabled = false;
+        }
+
+        async function publishResult() {
+            if (!votingSealed) { alert("Must close voting first."); return; }
+            document.getElementById("resultBtn").disabled = true;
+
+            try {
+                const res = await fetch(`/publish-result/${BOOTH_ID}/`, { method: "POST" });
+                const result = await res.json();
+
+                if (!res.ok) {
+                    alert("❌ VERIFICATION FAILED:\n" + (result.error || "Unknown Error") + "\nPhase: " + (result.phase || "?"));
+                    document.getElementById("resultBtn").disabled = false;
+                    return;
+                }
+
+                // Show modal with results
+                let html = '<h2 style="color:#166534; margin-bottom: 12px;">✅ ELECTION RESULTS</h2>';
+                html += '<p style="color:#166534; font-weight:bold; font-size:12px;">Cryptographic Verification Passed</p>';
+                html += `<p style="font-size:12px; margin-top:4px;"><b>Close Time:</b> ${result.timestamp_close}</p>`;
+                html += `<p style="font-size:12px; margin-top:4px;"><b>Total Votes:</b> ${result.total_votes}</p>`;
+                html += `<p style="font-size:12px; margin-top:10px; margin-bottom:2px;"><b>Commitment Token:</b></p>`;
+                html += `<div style="background:#f9fafb; padding:8px; border:1px solid #e5e7eb; border-radius:4px; font-family:monospace; font-size:11px; word-break:break-all; color:#2563eb;">${result.commitment_token}</div>`;
+                html += '<p style="font-size:11px; color:#ef4444; margin-top:6px; font-weight:bold;">Officer: Compare token with printed VVPAT slip!</p>';
+                html += '<table style="width:100%; text-align:left; border-collapse:collapse; margin-top:16px;">';
+                html += '<tr style="border-bottom: 2px solid #ccc; font-size:13px;"><th>Party</th><th style="text-align:right;">Votes</th></tr>';
+                result.results.forEach(r => {
+                    html += `<tr style="border-bottom: 1px solid #eee; font-size:13px; height:28px;"><td><b>${r.name}</b> (${r.id})</td><td style="text-align:right;"><b>${r.votes}</b></td></tr>`;
+                });
+                html += '</table>';
+
+                let modal = document.getElementById("resultModal");
+                if (!modal) {
+                    modal = document.createElement("div");
+                    modal.id = "resultModal";
+                    modal.className = "modal-overlay active";
+                    modal.innerHTML = `
+                        <div class="confirm-box" style="max-width: 480px; text-align: left;">
+                            <div id="resultModalContent"></div>
+                            <div class="confirm-btns" style="margin-top:20px;">
+                                <button class="btn-cancel" onclick="document.getElementById('resultModal').classList.remove('active'); document.getElementById('resultBtn').disabled = false;">Close</button>
+                            </div>
+                        </div>
+                    `;
+                    document.body.appendChild(modal);
+                } else {
+                    modal.classList.add("active");
+                }
+                document.getElementById("resultModalContent").innerHTML = html;
+
+            } catch (e) {
+                alert("Network error: " + e);
+                document.getElementById("resultBtn").disabled = false;
+            }
         }
 
         function dismissModal() {
